@@ -1,0 +1,122 @@
+---
+title: "Oregon Census Data"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+<style type="text/css">
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:focus {
+color: #fbb034;
+background-color: #00467f;
+border-color: #002a4c;
+font-weight: 900;
+}
+
+.chart-title {
+    border-bottom: 1px solid #d7d7d7;
+    color: #333333;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 7px 10px 4px;
+}
+
+.heading-level1 {  /* chart_title  */
+   color: #00467f;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+h4, .h4 {
+   color: #002a4c;
+    font-size: 15px;
+    font-weight: 550;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+</style>
+
+<h1>Oregon Census Visualization Example</h1>
+`r format(Sys.time(), "%A, %B %d, %Y %I:%M%p ")`
+
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidycensus)
+library(tidyverse)
+library(tmap)
+# census_api_key("", install = TRUE)
+options(tigris_use_cache = T)
+options(tigris_class = "sf")
+
+```
+
+Data Acquisition
+=======================================
+
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Load ACS health insurance coverage for Oregon
+
+```{r load health insurance coverage, eval=FALSE}
+dat12 <- get_acs(state = "OR",
+                  geography = "tract", 
+                  table = "B27001",
+                  year = 2012,
+                  cache_table = T,
+                  output = "tidy",
+                  geometry = TRUE) %>%
+  rename(`2016` = estimate) %>%
+  select(-moe)
+
+dat16 <- get_acs(state = "OR",
+                  geography = "tract", 
+                  table = "B27001",
+                  year = 2016,
+                  cache_table = T,
+                  output = "tidy",
+                  geometry = TRUE) %>%
+  rename(`2016` = estimate) %>%
+  select(-moe)
+
+head(dat16)
+
+```
+
+### 
+
+
+
+Visualization
+=======================================
+
+
+References
+=======================================
+
+### Reference material
+
+* Creating beautiful demographic maps in R with the tidycensus and tmap packages http://zevross.com/blog/2018/10/02/creating-beautiful-demographic-maps-in-r-with-the-tidycensus-and-tmap-packages/#part-2-creating-beautiful-maps-with-tmap
+* Spatial data in tidycensus https://walkerke.github.io/tidycensus/articles/spatial-data.html
+* Generating metropolitan subsets of Census data with R and tigris https://walkerke.github.io/2017/05/tigris-metros
+
+### Useful commands
+
+#### tigris rbind
+
+```{r eval=FALSE, echo=TRUE}
+orwa <- rbind_tigris(tracts("OR", cb = TRUE),  tracts("WA", cb = TRUE))
+```
+
+```
+orwa <- rbind_tigris(tracts("OR", cb = TRUE),  tracts("WA", cb = TRUE))
+```
+
+ 
