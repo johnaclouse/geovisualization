@@ -3,7 +3,7 @@ title: "Oregon Census Data"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
-    vertical_layout: fill
+    vertical_layout: scroll
 ---
 
 <style type="text/css">
@@ -63,17 +63,56 @@ Data Acquisition
 Column {data-width=650}
 -----------------------------------------------------------------------
 
+### ACS Variables
+
+```{r acs variables}
+v15 <- load_variables(2015, "acs5", cache = TRUE)
+
+options("DT.warn.size" = F)
+
+DT::datatable(v15,
+              # colnames=c("Date", "Conversion Rate", "Conversations", "Bookings"),
+              extensions = 'Buttons',
+              rownames = FALSE,
+              fillContainer = FALSE,
+              autoHideNavigation = FALSE,
+              options = list(dom = 'Bfrtip',
+                             buttons =
+                               list(
+                                 # 'colvis',
+                                 # 'print',
+                                 list(
+                                   extend = 'collection',
+                                   buttons = list(list(extend='excel',
+                                                       filename = 'Bookings')
+                                                  # list(extend='pdf',
+                                                  #      filename= 'Bookings')
+                                                  ),
+                                   text = 'Export'
+                                 )),
+                             scrollX = TRUE,
+                             scrollY = "200px",
+                             pageLength = 10,
+                             order=list(list(1,'desc')))) %>% 
+   DT::formatStyle(columns = c(3), fontSize = '50%')
+
+```
+
+
+
+
 ### Load ACS health insurance coverage for Oregon
 
 ```{r load health insurance coverage, eval=FALSE}
+
 dat12 <- get_acs(state = "OR",
                   geography = "tract", 
                   table = "B27001",
-                  year = 2012,
+                  year = 2014,
                   cache_table = T,
                   output = "tidy",
                   geometry = TRUE) %>%
-  rename(`2016` = estimate) %>%
+  rename(`2012` = estimate) %>%
   select(-moe)
 
 dat16 <- get_acs(state = "OR",
@@ -115,8 +154,8 @@ References
 orwa <- rbind_tigris(tracts("OR", cb = TRUE),  tracts("WA", cb = TRUE))
 ```
 
-```
-orwa <- rbind_tigris(tracts("OR", cb = TRUE),  tracts("WA", cb = TRUE))
-```
+> https://github.com/rte-antares-rpackage/leaflet.minicharts
 
- 
+> Radar charts for showing attributes of different segments (median values) https://github.com/mangothecat/radarchart
+
+> https://github.com/garthtarr/pairsD3
